@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"sync"
+	"time"
 
 	"golang.org/x/net/websocket"
 )
@@ -12,7 +13,12 @@ func main() {
 	url := "ws://localhost:23718/hello"
 	ch := make(chan string)
 	var wg sync.WaitGroup
-	for i := 0; i < 10; i++ {
+
+	rateLimit := time.Second / 10
+	throttle := time.Tick(rateLimit)
+
+	for i := 0; i < 10000; i++ {
+		<-throttle
 		wg.Add(1)
 		go dialServer(i, origin, url, ch, &wg)
 	}
@@ -38,4 +44,5 @@ func dialServer(id int, o, url string, ch chan<- string, wg *sync.WaitGroup) {
 		fmt.Println("Error reading response from socket: ", err)
 	}
 	ch <- fmt.Sprintf("Routine id: %v, msg: %v", id, string(msg))
+	return
 }
