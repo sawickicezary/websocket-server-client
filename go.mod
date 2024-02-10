@@ -1,4 +1,4 @@
-module github.com/sawickicezary/websocketChat
+module github.com/sawickicezary/websocket-server-client
 
 go 1.21.3
 
